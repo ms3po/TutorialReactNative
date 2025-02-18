@@ -1,7 +1,10 @@
 import Color from "@/constant/Color";
-import { Text, View, Image, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function Index() {
+  const router = useRouter();
+
   return (
     <View
       style={{
@@ -51,32 +54,44 @@ export default function Index() {
           with AI!
         </Text>
 
-        <View style={styles.button}>
-          <Text style={[styles.buttonText, {color: Color.PRIMARY}]}>
+        <TouchableOpacity style={styles.button}>
+          <Text
+            style={[styles.buttonText, { color: Color.PRIMARY }]}
+            onPress={() => router.push("./auth/signUp")}
+          >
             Get Started
           </Text>
-        </View>
-        <View style={[styles.button, {backgroundColor: Color.PRIMARY, borderWidth: 1, borderColor: Color.WHITE}]}>
-          <Text style={[styles.buttonText, {color: Color.WHITE}]}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              backgroundColor: Color.PRIMARY,
+              borderWidth: 1,
+              borderColor: Color.WHITE,
+            },
+          ]}
+          onPress={() => router.push("./auth/signIn")}
+        >
+          <Text style={[styles.buttonText, { color: Color.WHITE }]}>
             Already have an account?
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  button:{
-    padding: 15, 
-    backgroundColor: Color.WHITE, 
+  button: {
+    padding: 15,
+    backgroundColor: Color.WHITE,
     marginTop: 20,
     borderRadius: 10,
-    
   },
-  buttonText:{
+  buttonText: {
     textAlign: "center",
-    fontSize: 18, 
+    fontSize: 18,
     fontFamily: "outfit",
-  }
-})
+  },
+});
