@@ -6,14 +6,58 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
 } from "react-native";
 import React from "react";
 import Color from "@/constant/Color";
 import { useRouter } from "expo-router";
+import {auth} from "./../../config/firebaseConfig";
+import {createUserWithEmailAndPassword, User} from "firebase/auth";
+import {db} from "./../../config/firebaseConfig";
+import {setDoc, doc} from "firebase/firestore";
+
 
 export default function SignUp() {
+  const router = useRouter();
 
-  const router = useRouter() ; 
+  const [fullName, setFullName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const [error, setError] = React.useState("");
+
+  const onChangeInputField = (
+    value: any,
+    setFunction: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    setFunction(value as string || "");
+  };
+
+  const createNewAccount = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+    .then( async (response) => {
+      const user = response.user;
+      console.log(user);
+      await saveUser(user);
+      //Save User to Database
+    }).catch((error) => {
+      console.log(error);
+      setError(error.message);
+    })
+  }
+
+  const saveUser = async (user : User) => {
+    await setDoc(doc(db, "users", email),{
+      name: fullName,
+      email: email,
+      member: false,
+      uid : user?.uid,
+    })
+  }
+
+  //Navigation to new Screen
+
 
   const styles = StyleSheet.create({
     textInput: {
@@ -61,7 +105,6 @@ export default function SignUp() {
         <Text
           style={{
             fontSize: 30,
-
             fontFamily: "outfit-bold",
           }}
         >
@@ -72,18 +115,22 @@ export default function SignUp() {
           style={styles.textInput}
           placeholder="Full Name"
           placeholderTextColor={"darkgray"}
+          onChange={(value) => onChangeInputField(value, setFullName)}
         />
         <TextInput
           style={styles.textInput}
           placeholder="E-Mail"
           placeholderTextColor={"darkgray"}
+          onChange={(value) => onChangeInputField(value, setEmail)}
         />
         <TextInput
           style={styles.textInput}
           placeholder="Password"
           secureTextEntry={true}
           placeholderTextColor={"darkgray"}
+          onChange={(value) => onChangeInputField(value, setPassword)}
         />
+        <Text>{error}</Text>
       </View>
 
       <View
@@ -96,12 +143,12 @@ export default function SignUp() {
         }}
       >
         <TouchableOpacity
+          onPress={createNewAccount}
           style={{
             marginBottom: 20,
             backgroundColor: Color.PRIMARY,
             width: "100%",
             height: 50,
-
             borderRadius: 100,
           }}
         >
